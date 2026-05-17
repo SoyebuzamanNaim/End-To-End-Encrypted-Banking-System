@@ -8,8 +8,8 @@ spring.datasource.password=${SUPABASE_DB_PASSWORD}
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA / Hibernate settings
-# Note: set to 'validate' or 'none' in production if using Flyway migrations
-spring.jpa.hibernate.ddl-auto=update
+# Required for production: DO NOT use update in prod, use validate with Prisma/Flyway handling migrations
+spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
 # Application-Level Security Key
