@@ -11,6 +11,7 @@ model User {
   id        String    @id @default(uuid()) @db.Uuid
   email     String    // Encrypted string via AES-256-GCM
   fullName  String    @map("full_name") // Encrypted string via AES-256-GCM
+  role      String    @default("USER")
   accounts  Account[]
 
   @@map("users")
