@@ -4,6 +4,7 @@ import com.bank.security.CryptoUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Base64;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class PublicKeyController {
         this.cryptoUtils = cryptoUtils;
     }
 
+    @Cacheable("publicKeys")
     @GetMapping("/public-key")
     public Map<String, String> getPublicKey() {
         // Export public key as Base64 encoded SPKI format for 'jose' library

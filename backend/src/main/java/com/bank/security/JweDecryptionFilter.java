@@ -7,6 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Component
 public class JweDecryptionFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JweDecryptionFilter.class);
     private final CryptoUtils cryptoUtils;
 
     public JweDecryptionFilter(CryptoUtils cryptoUtils) {
@@ -42,6 +45,7 @@ public class JweDecryptionFilter extends OncePerRequestFilter {
                 String jweString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 
                 if (jweString == null || jweString.trim().isEmpty()) {
+                    log.warn("Intercepted application/jose request but body was empty.");
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -52,17 +56,17 @@ public class JweDecryptionFilter extends OncePerRequestFilter {
                 // 3. Decrypt using RSA Private Key
                 RSADecrypter decrypter = new RSADecrypter((RSAPrivateKey) cryptoUtils.getRsaPrivateKey());
                 jweObject.decrypt(decrypter);
+                
+                log.info("Successfully decrypted incoming JWE payload.");
 
                 // 4. Extract decrypted payload
-                // The frontend packs { "data": {...}, "jwt": "..." } inside the JWE
                 String decryptedPayload = jweObject.getPayload().toString();
                 
-                // For demonstration, establish trust in SecurityContextHolder
-                // In production, parse the payload to extract and validate the JWT here
+                // For demonstration, establish trust
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken("secure-user", null, Collections.emptyList()));
 
-                // 5. Wrap request with raw decrypted JSON so controllers receive standard @RequestBody
+                // 5. Wrap request with raw decrypted JSON
                 HttpServletRequest wrappedRequest = new HttpServletRequestWrapper(request) {
                     @Override
                     public BufferedReader getReader() throws IOException {
@@ -74,6 +78,7 @@ public class JweDecryptionFilter extends OncePerRequestFilter {
                 filterChain.doFilter(wrappedRequest, response);
                 return;
             } catch (Exception e) {
+                log.error("Security Incident: Failed to decrypt or parse JWE payload. Discarding request.", e);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
