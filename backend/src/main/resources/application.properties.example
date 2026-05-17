@@ -1,4 +1,5 @@
 spring.application.name=banking-system
+server.error.include-stacktrace=never
 
 # Supabase PostgreSQL Database Configuration
 spring.datasource.url=${SUPABASE_DB_URL}

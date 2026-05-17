@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    // Encrypted string via AES-256-GCM
+  fullName  String    @map("full_name") // Encrypted string via AES-256-GCM
+  accounts  Account[]
+
+  @@map("users")
+}
+
+model Account {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  balance   String    // Encrypted string via AES-256-GCM
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("accounts")
+}

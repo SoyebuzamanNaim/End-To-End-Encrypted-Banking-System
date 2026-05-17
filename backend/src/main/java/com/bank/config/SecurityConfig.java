@@ -22,6 +22,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.disable())
+                .contentSecurityPolicy(cps -> cps.policyDirectives("default-src 'self'"))
+                .frameOptions(frame -> frame.deny())
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/crypto/**").permitAll()
                 .anyRequest().permitAll() // Permitting all for demo

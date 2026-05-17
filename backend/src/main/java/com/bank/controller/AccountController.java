@@ -1,5 +1,7 @@
 package com.bank.controller;
 
+import com.bank.dto.TransferRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -13,8 +15,8 @@ public class AccountController {
     }
     
     @PostMapping("/transfer")
-    public Map<String, String> transfer(@RequestBody Map<String, Object> payload) {
-        // Payload has been decrypted by JweDecryptionFilter
-        return Map.of("status", "success", "message", "Secure transfer executed");
+    public Map<String, String> transfer(@Valid @RequestBody TransferRequest payload) {
+        // Payload has been decrypted by JweDecryptionFilter and validated automatically
+        return Map.of("status", "success", "message", "Secure transfer executed to " + payload.getToAccount());
     }
 }
