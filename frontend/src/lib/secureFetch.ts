@@ -7,7 +7,7 @@ export async function fetchPublicKey(): Promise<string> {
   return data.publicKey;
 }
 
-export async function secureFetch(url: string, payload: any, publicKeyPem: string, jwtToken: string) {
+export async function secureFetch(url: string, payload: unknown, publicKeyPem: string, jwtToken: string) {
   // 1. Import the backend's RSA Public Key
   const publicKey = await importSPKI(publicKeyPem, 'RSA-OAEP-256');
 

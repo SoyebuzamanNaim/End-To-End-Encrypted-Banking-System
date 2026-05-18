@@ -34,17 +34,16 @@ export default function Dashboard() {
     }
   };
 
-  const fetchBalance = async () => {
-    try {
-      const res = await fetch('http://localhost:8080/api/v1/account/balance');
-      const data = await res.json();
-      setBalance(data.balance);
-    } catch (err) {
-      console.error("Failed to fetch balance", err);
-    }
-  };
-
   useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/v1/account/balance');
+        const data = await res.json();
+        setBalance(data.balance);
+      } catch (err) {
+        console.error("Failed to fetch balance", err);
+      }
+    };
     fetchBalance();
   }, []);
 
