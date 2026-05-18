@@ -11,6 +11,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.BufferedReader;
 
+import java.security.interfaces.RSAPublicKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,8 +28,12 @@ class JweDecryptionFilterTest {
 
     @Test
     void testDoFilterInternal_WithPostRequest() throws Exception {
+        String originalPayload = "{\"message\": \"This is decrypted payload\"}";
+        String jweString = JweHelper.createJwe(originalPayload, (RSAPublicKey) cryptoUtils.getRsaPublicKey());
+        
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/v1/account/transfer");
-        request.setContent("encrypted_jwe_payload".getBytes());
+        request.setContentType("application/jose");
+        request.setContent(jweString.getBytes());
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);
 

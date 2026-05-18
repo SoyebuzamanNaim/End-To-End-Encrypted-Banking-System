@@ -31,7 +31,7 @@ class AccountControllerTest {
 
     @Test
     void testTransfer() throws Exception {
-        String payload = "{\"amount\": \"100\"}";
+        String payload = "{\"toAccount\": \"123456789\", \"amount\": \"100\"}";
         mockMvc.perform(post("/api/v1/account/transfer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
